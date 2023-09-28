@@ -17,7 +17,17 @@ triUmp <-read.csv(file="triUmpsal.csv",header=TRUE)
 
 A new  preventative aides drug (triUmpsal) is under test in clinical trials. Consider only the DrugUsers, does this drug seem effective?  Hint - use dplyr to obtain that subpopulation with the filter command.
 
+```{r}
+library(dplyr)
+druggies = filter(triUmp, triUmp$DrugUser=="yes" )
+```
+$H_0$: There is no effectiveness on the new preventative drug treatment for aids
+
+$H_A$: There is a effectiveness on the new preventative drug treatment for aids
+
 # Methods
+
+The response variable is the infected based on the treatment of the new preventative aids drug is categorical. The explanatory variable is treatment, which is categorical. Therefore, we use the Cat_Cat file. 
 
 <!--Decide on your methods:  use "variable analysis" or other appropriate descriptors.  Make sure to choose at least one graphical method and at least one numerical method. Discuss what data manipulations may be needed for example subsetting or other binning procedures and what sort of graphical displays and inferential tools will be used!-->
 
@@ -31,15 +41,46 @@ A new  preventative aides drug (triUmpsal) is under test in clinical trials. Con
 
 <!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question. Bottom line is to explain the features of the graph that are relevant to conforming or departing to what is expected by your null hypothesis !-->
 
+```{r}
+barchartGC(~infected + treatment,data=druggies)
+barchartGC(~infected + treatment,data=druggies, type="percent")
+```
+
+This bar graph shows that the among the people who got aids, those who got the new preventative drug had a lower percentage of aid cases. Those who do not have aids and got the placebo have around the same percentage of aid cases. 
+
 ### Numerical Descriptive Results
 
 <!--Numerical results go here. Use the numerical results to describe the patterns if any that exist in the data as focused toward the research question!-->
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=druggies)
+rowPerc(table1)
+colPerc(table1)
+```
+
+This chart shows that of those who are infected with aids, 24.29 percent had the new preventative drug and 75.71 percent had the placebo. Of those who do not have aids 47.59 percent received the the new preventative drug and 52.41 percent received the placebo. Those who had the placebo are about three times more likely to get aids than those who got the new preventative drug. 
 
 ## Inferential Results
 
 <!--State hypothesis clearly.  Make sure your discussion of the inferential test covers all the aspects that the test output produces, such as test statistic, p-value etc.  Make a decision about the null hypothesis, explain the assumptions on which the selected test/procedure was based, and why the chosen procedure satisfys the assumptions and is appropriate to answer the research question!-->
 
+```{r}
+chisq.test(table1)
+chisqtestGC(table1)
+fisher.test(table1)
+```
+
+the p-value is 0.0000001242, which is lower than 0.05, therefore we reject the null hypothesis, that there is no effectiveness on the new preventative drug treatment for aids
+
+```{r}
+druggies$infected=factor(druggies$infected,c("none", "aids"))
+fisher.test(druggies$treatment, druggies$infected)
+```
+The p-value is 0.00000000423. The odds ratios 2.8:1, you are almost three times (2.8x) to be protected from getting aids if you get the vaccine rather than the placebo. The vaccine is highly effective
+
 
 # Discussion and Conclusion
 
 <!--Discussion and conclusion here.  If you found a relationship be sure to consider whether the relationship occurs because one of the variavbles causes the other, or whether they perhasps are related for some other reason.  Watch the chapter 6 videos from the GeorgeTown videos collection.!-->
+
+The orginal question, is the vaccine effective in preventing aids? A Chisq test was performed, resulting in a -value that is less thank 0.05. Therefore we reject the null hypothesis, that there is no effectiveness on the new preventative drug treatment for aids. We conclude that the vaccine is effective in preventing aids. if you take the vaccine you are 2.8 times more likely in preventing aids. 
